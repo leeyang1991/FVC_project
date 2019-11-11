@@ -4,7 +4,7 @@ import arcpy
 import os
 import log_process
 import time
-from arcpy import sa
+
 
 this_root = os.getcwd()+'\\..\\'
 
@@ -75,11 +75,13 @@ def float_to_int():
     #     print(raster)
     #     outInt = arcpy.sa.Int(raster)
     #     outInt.save(u'E:\\FVC内蒙古植被覆盖数据\\fusion\\int_'+raster)
-    fdir = 'E:\\FVC内蒙古植被覆盖数据\\fusion\\'
+    fdir = r'D:\FVC\FVC_1km_new\1km_30m_cubic\\'
+    outdir = r'D:\FVC\FVC_1km_new\1km_30m_cubic_int\\'
+    mk_dir(outdir)
     for f in os.listdir(fdir):
         if f.endswith('.tif'):
             print(f)
-            arcpy.CopyRaster_management("E:\\FVC内蒙古植被覆盖数据\\fusion\\"+f, "E:\\FVC内蒙古植被覆盖数据\\fusion\\test\\int_"+f, "DEFAULTS", "", "255", "", "","8_BIT_UNSIGNED")
+            arcpy.CopyRaster_management(fdir+f, outdir+f, "DEFAULTS", "", "255", "", "","8_BIT_UNSIGNED")
 
 
 
@@ -111,29 +113,30 @@ def build_pyramids():
     #     resample, compress, quality, skipexist)
 
 
-def main():
-    arcpy.CheckOutExtension('Spatial')
-    arcpy.env.workspace = this_root+'\\AVHRR_clipped\\'
-    rasters = arcpy.ListRasters('*.tif*')
-    # print(rasters)
-    time_init = time.time()
-    flag = 0
-    for raster in rasters:
-        # Save temp raster to disk with new name
-        start = time.time()
-        ras = sa.Raster(raster)
-        arcpy.CalculateStatistics_management(ras)
-        max = ras.maximum
-        fvc = ras/8000.
-        fvc = sa.Con(fvc, 0, fvc, "VALUE < 0")
-        fvc = sa.Con(fvc, 1, fvc, "VALUE > 1")
-        fvc.save(this_root+'AVHRR_fvc\\'+raster)
-        end = time.time()
-        logger.process_bar(flag,len(rasters),time_init,start,end,raster)
-        flag += 1
-        # break
+def clip_neimeng_quanqu():
+    shp = r'D:\FVC\nmjx\vector\nmsj1.shp'
+    fdir = r'D:\FVC\FVC_1km_new\FVC-year_1km\\'
+    out_dir = r'D:\FVC\FVC_1km_new\FVC-year_1km_clipped\\'
+    mk_dir(out_dir)
+    for f in os.listdir(fdir):
+        if f.endswith('.tif'):
+            in_raster = fdir+f
+            out_raster = out_dir+f
+            in_template_dataset = shp
+            nodata_value = -127
+            arcpy_clip(in_raster,out_raster,in_template_dataset,nodata_value)
+    pass
+
+
+
+
+
+
 
     pass
 
 if __name__ == '__main__':
-    build_pyramids()
+    # build_pyramids()
+    # arcpy_con()
+    # arcpy_con()
+    pass

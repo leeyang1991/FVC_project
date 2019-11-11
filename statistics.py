@@ -9,18 +9,19 @@ import numpy as np
 import matplotlib.colors as col
 import matplotlib.cm as cm
 
-this_root = os.getcwd()+'\\..\\'
+# this_root = os.getcwd()+'\\..\\'
 
 plt.rcParams['font.sans-serif'] = 'SimHei'
 def quanqu():
-    fdir = this_root+'1km年值_1978_1985_1995_2005_2018\\'
-    fdir = fdir.decode('gbk')
+    fdir = r'D:\FVC\FVC_1km_new\FVC-year_1km_clipped\\'
+    # fdir = fdir.decode('gbk')
     flist = os.listdir(fdir)
-    fw = open('quanqu.csv','w')
+    fw = open(fdir+'quanqu.csv','w')
     for f in flist:
         if f.endswith('.tif'):
-                    # a = a.decode('gbk')
-            print(f)
+            # print(f)
+            year = f.split('.')[0].split('fvc')[1]
+
             # print(a.decode('gbk'))
             # exit()
             array, originX, originY, pixelWidth, pixelHeight = to_raster.raster2array(fdir+f)
@@ -35,7 +36,7 @@ def quanqu():
             di = 0.
             for i in range(len(array)):
                 for j in range(len(array[0])):
-                    val = array[i][j]
+                    val = array[i][j]*100
                     if 0<=val<=100:
                         fenmu += 1.
                         if 75<val<=100:
@@ -56,34 +57,39 @@ def quanqu():
             zhongdi_ratio = round(zhongdi/fenmu,4)*100.
             di_ratio = round(di/fenmu,4)*100.
 
-            a = '1978年内蒙古植被高覆盖区面积为{}平方千米，占全区总面积比例为{}%，\n' \
-                '1978年内蒙古植被中高覆盖区面积为{}平方千米，占全区总面积比例为{}%，\n' \
-                '1978年内蒙古植被中覆盖区面积为{}平方千米，占全区总面积比例为{}%，\n' \
-                '1978年内蒙古植被中低覆盖区面积为{}平方千米，占全区总面积比例为{}%，\n' \
-                '1978年内蒙古植被低覆盖区面积为{}平方千米，占全区总面积比例为{}%'\
-                .format(gao,gao_ratio,
+            a = '{}年内蒙古植被高覆盖区面积为{}平方千米，占全区总面积比例为{}%，' \
+                '植被中高覆盖区面积为{}平方千米，占全区总面积比例为{}%，' \
+                '植被中覆盖区面积为{}平方千米，占全区总面积比例为{}%，' \
+                '植被中低覆盖区面积为{}平方千米，占全区总面积比例为{}%，' \
+                '植被低覆盖区面积为{}平方千米，占全区总面积比例为{}%'\
+                .format(year,gao,gao_ratio,
                         zhonggao,zhonggao_ratio,
                         zhong,zhong_ratio,
                         zhongdi,zhongdi_ratio,
                         di,di_ratio)
-            b='{:.0f}\n'*5
+            b='{},'*5
             c=b.format(gao,zhonggao,zhong,zhongdi,di)
-            print(c)
+            # print(c)
+            print(a.decode('gbk'))
+            fw.write(','.join(c.split(',')) + '\n')
             # fw.write()
             # print(a.decode('gbk'))
 
 
 def fenqu():
-    fdir = 'E:\\FVC内蒙古植被覆盖数据\\1km年值_1978_1985_1995_2005_2018_clipped\\'.decode('gbk')
-    shp_name = ['北方风沙区', '北方土石山区', '东北黑土区', '西北黄土高原区']
+    # fdir = r'D:\FVC\FVC_1km_new\4fenqu\\'.decode('gbk')
+    fdir = r'D:\FVC\重点区域范围\1km_fenqu_clipped\\'.decode('gbk')
+    # shp_name = ['北方风沙区', '北方土石山区', '东北黑土区', '西北黄土高原区']
+    shp_name = ['太行山山地丘陵区', '宁蒙覆沙黄土丘陵区', '晋陕蒙丘陵沟壑区', '燕山及辽西山地丘陵区']
+    # shp_name = ['内蒙古草地', '鄂尔多斯市', '内蒙古农牧交错带']
     flist = os.listdir(fdir)
-    fw = open(this_root+'result.csv','w')
+    fw = open(fdir+'result_.csv','w')
     for f in flist:
         if f.endswith('.tif'):
             # print(f.decode('gbk'))
 
             zone = f.split('_')[-1].split('.')[0].encode('gbk')
-            year = f.split('_')[1].split('.')[0]
+            year = f.split('_')[0].split('fvc')[1]
             # print(year)
             # exit()
             # print(zone)
@@ -99,7 +105,7 @@ def fenqu():
             di = 0.
             for i in range(len(array)):
                 for j in range(len(array[0])):
-                    val = array[i][j]
+                    val = array[i][j]*100
                     if 0 <= val <= 100:
                         fenmu += 1.
                         if 75 < val <= 100:
@@ -297,11 +303,11 @@ def plot_fenqu():
 
 def plot_quanqu_bar():
     import pandas as pd
-    a= '''297059	296596	327189	265034	283585
-148351	161112	165875	168986	186943
-180850	159202	178877	176705	165491
-133059	174936	179605	165993	158746
-386778	354251	294551	369379	351332'''
+    a= '''263484	104980	162749	135401	479571
+252464	101426	161515	127550	503230
+284295	105873	143990	134244	477783
+356737	144824	107264	90986	446374
+424672	147886	133204	128560	311863'''
     a = a.split('\n')
     data = []
     for i in a:
@@ -311,7 +317,7 @@ def plot_quanqu_bar():
         for d in i:
             temp.append(int(d))
         data.append(temp)
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(data).T
     print(df)
     # sns.color_palette()
     # cmap = ["#734e00", "#a87001", "#effa91", "#b1cc63", "#5d8c22"]
@@ -338,11 +344,11 @@ def plot_quanqu_bar():
 
 def plot_quanqu_line():
     import pandas as pd
-    a= '''297059	296596	327189	265034	283585
-148351	161112	165875	168986	186943
-180850	159202	178877	176705	165491
-133059	174936	179605	165993	158746
-386778	354251	294551	369379	351332'''
+    a= '''263484	252464	284295	356737	424672
+104980	101426	105873	144824	147886
+162749	161515	143990	107264	133204
+135401	127550	134244	90986	128560
+479571	503230	477783	446374	311863'''
     a = a.split('\n')
     data = []
     for i in a:
@@ -423,7 +429,7 @@ def plot_fenqu_line(a,title):
             # print(d)
             temp.append(int(d))
         data.append(temp)
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(data).T
     print(df)
     # exit()
     # colors = ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
@@ -442,7 +448,7 @@ def plot_fenqu_line(a,title):
         plt.plot(df.T[i]/10000,c=cmap[i],label=zone[i])
         # axs.append(ax)
         # plt.scatter(range(len(df.T)),df.T[i],c=cmap[i])
-    plt.ylabel('面积（km2）'.decode('gbk'))
+    plt.ylabel('面积（万km2）'.decode('gbk'))
     plt.xticks(range(5),['1978','1985','1995','2005','2018'])
     # plt.yticks([0,100000,200000,300000,400000],['0','10','20','30','40'])
     plt.legend()
@@ -454,12 +460,88 @@ def plot_fenqu_line(a,title):
     # print(df)
 
 
-if __name__ == '__main__':
-    a='''940	1186	2284	2816	3555
-5009	6295	15621	17611	20693
-20137	27319	29397	30305	33606
-39051	52719	62176	52383	51881
-74747	52365	30406	36769	30149'''
-    cal_quanqu_bar(a)
+def plot_zone3_zone4():
+    a3 = ['''72010	62025	90331	43014	6184
+    64350	63734	88263	49017	8200
+    87557	67502	75775	36904	5826
+    118301	84139	49597	16207	5320
+    162759	64760	32368	10192	3485
+    ''', '''68996	46844	76821	96316	220393
+    61730	44079	77649	83497	242415
+    73247	42489	72721	101588	219325
+    114954	64248	63116	77343	189709
+    141128	86422	104853	113133	63834
+    ''', '''0	26	733	7968	77446
+    0	2	700	6146	79325
+    176	315	1397	13779	70506
+    280	1053	6496	26826	51518
+    1808	6242	23045	34607	20471
+    ''']
 
+    a4 = ['''241010	55658	52245	23652	14977
+    235734	59306	65676	23657	3169
+    254440	50383	48536	25311	8872
+    295924	54161	26759	7328	3370
+    317426	41750	19618	5263	3485
+    ''', '''8066	16888	32657	17559	4080
+    7975	17375	32501	17576	3823
+    14706	24113	27368	9633	3430
+    21416	33966	17285	4131	2452
+    39943	24766	8879	3354	2308
+    ''', '''12984	26983	58325	68586	372670
+    7978	21172	44973	60685	404740
+    13645	22602	48273	70426	384602
+    36242	38733	41489	43846	379238
+    50503	59177	69590	78704	281574
+    ''', '''1433	5462	19535	25618	87854
+    783	3582	18384	25645	91508
+    1513	8786	19832	28883	80888
+    3163	17989	21740	35688	61322
+    16828	22207	35125	41242	24500
+    ''']
+
+    shp_name4 = ['北方风沙区', '北方土石山区', '东北黑土区', '西北黄土高原区']
+    shp_name3 = ['内蒙古草地', '鄂尔多斯市', '内蒙古农牧交错带']
+    plot_fenqu_line(a4[3], shp_name4[3].decode('gbk'))
+    # for i in range(len(shp_name3)):
+
+def main():
+    a=['''62	1154	5514	2355	2
+0	306	3993	4786	2
+112	1181	5770	2022	2
+412	4144	4326	155	50
+2754	5274	877	123	59
+''','''1433	5202	16991	15789	70418
+783	3512	16571	16309	72658
+1444	7691	16470	15280	68948
+2692	15951	12345	21765	57080
+14122	13986	22789	35738	23198
+''','''0	260	2547	9834	17438
+0	70	1816	9341	18852
+69	1098	3365	13607	11940
+471	2041	9400	13925	4242
+2707	8224	12338	5507	1303
+''','''8004	15734	27143	15204	4077
+7975	17069	28508	12790	3820
+14594	22932	21598	7611	3427
+21004	29822	12959	3976	2401
+37189	19492	8002	3231	2248
+''',]
+
+    titles = ['太行山山地丘陵区', '宁蒙覆沙黄土丘陵区', '晋陕蒙丘陵沟壑区', '燕山及辽西山地丘陵区']
+    # title = '太行山山地丘陵区'.decode('gbk')
+    for i in range(4):
+        plot_fenqu_line(a[i],titles[i].decode('gbk'))
+    pass
+
+
+
+if __name__ == '__main__':
+
+    #     plot_fenqu_line(a4[i],shp_name4[i].decode('gbk'))
+
+    # plot_fenqu_line()
+
+
+    main()
     pass
