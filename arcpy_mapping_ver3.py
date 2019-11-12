@@ -31,10 +31,10 @@ def mapping(current_dir,tif,outjpeg,title,mxd_file):
 
 
 def mapping_annual():
-    fdir = r'D:\FVC\FVC_1km_new\FVC-year_1km_clipped_0_100\\'
-    outdir = r'D:\FVC\FVC_1km_new\FVC-year_1km_clipped_0_100_jpg\\'
+    fdir = r'D:\FVC\FVC_1km_new\fusion_int_0-100\\'
+    outdir = r'D:\FVC\图报告\30m_年_fusion\\'
     mk_dir(outdir)
-    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\出图1.mxd'
+    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\内蒙古制图模板.mxd'
 
     mk_dir(outdir)
     flist = os.listdir(fdir)
@@ -46,7 +46,8 @@ def mapping_annual():
         if f.endswith('.tif'):
             print(f)
             # year = name_dic[f]
-            year = f.split('.')[0].split('fvc')[1]
+            # year = f.split('.')[0].split('fvc')[1]
+            year = f.split('.')[0]
             # exit()
             # year = f.split('_')[1].split('.')[0]
             # print(year)
@@ -55,23 +56,23 @@ def mapping_annual():
             # exit()
             # title = ''
             tif = f
-            outjpeg = outdir + title.decode('gbk')
+            outjpeg = outdir.decode('gbk') + title.decode('gbk')
 
             mapping(fdir, tif, outjpeg, title, mxd_file=mxd)
 
 
 def mapping_fenqu4(year,title_year):
-    fdir = r'D:\FVC\30m_substract_int_4fenqu\\'
-    outdir = r'D:\FVC\30m_substract_int_substract_jpg\\'
+    fdir = r'E:\FVC内蒙古植被覆盖数据\30m月值出图\\'.decode('gbk')
+    outdir = r'D:\FVC\图图集\4分区\\'.decode('gbk')
     mk_dir(outdir)
-    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\分区出图_substract.mxd'
+    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\分区出图.mxd'
 
     mxd = arcpy.mapping.MapDocument(mxd)
     df = [0,1,2,3]
     shp_name = ['北方风沙区', '北方土石山区', '东北黑土区', '西北黄土高原区']
     # fname_pre = ['1.tif_','2.tif_','3.tif_','4.tif_']
     fname_pre = year
-    print(fname_pre)
+    # print(fname_pre)
 
     # title_year = ['1978-1985','1985-1995','1995-2005','2005-2018']
     title = '{}年内蒙古自治区植被覆盖变化'.format(title_year)
@@ -79,12 +80,13 @@ def mapping_fenqu4(year,title_year):
         if textElement.name == 'title':
             textElement.text = (title)
 
-    outjpeg = outdir + title + '.jpg'
+    outjpeg = outdir + title.decode('gbk') + '.jpg'
 
     for i in df:
         # print(i)
         df0 = arcpy.mapping.ListDataFrames(mxd)[i]
         tif = fname_pre+shp_name[i]+'.tif'
+        print(tif.decode('gbk'))
         workplace = "RASTER_WORKSPACE"
 
 
@@ -102,10 +104,10 @@ def mapping_fenqu4(year,title_year):
 
 
 def mapping_nongmu(tif_list,title):
-    fdir = r'D:\FVC\nongmu\30m_substractclipped\\'
-    outdir = r'D:\FVC\nongmu\30m_substract_clipped_jpg\\'
+    fdir = r'D:\FVC\nongmu\clipped\\'
+    outdir = r'D:\FVC\图图集\农牧交错带\\'
     mk_dir(outdir)
-    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\分区出图_nongmu_substract.mxd'
+    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\分区出图_nongmu.mxd'
 
     mxd = arcpy.mapping.MapDocument(mxd)
     df = [0,1,2]
@@ -157,10 +159,10 @@ def rename():
 
 
 def mapping_zhongdian(year,title_year):
-    fdir = r'D:\FVC\重点区域范围\30m_fenqu_substract\\'
-    outdir = r'D:\FVC\重点区域范围\30m_fenqu_substract_jpg\\'
+    fdir = r'D:\FVC\重点区域范围\30m_fenqu_clipped\\'
+    outdir = r'D:\FVC\图图集\重点\\'
     mk_dir(outdir)
-    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\分区出图_zhongdian_substract.mxd'
+    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\分区出图_zhongdian.mxd'
 
     mxd = arcpy.mapping.MapDocument(mxd)
     df = [0,1,2,3]
@@ -197,23 +199,10 @@ def mapping_zhongdian(year,title_year):
 
 
 
+def do_mapping_monthly():
 
-
-
-
-
-
-
-
-
-
-
-def main():
-
-    # dir = this_root+'190509\\民权线路cad\\dwg_to_shp\\10kV鲁10Ⅱ鲁西线\\'
-    # current_dir, tif, outjpeg = 'E:\\FVC内蒙古植被覆盖数据\\1km年值_1978_1985_1995_2005_2018\\'.decode('gbk'),'CDR_1978.tif','E:\\FVC内蒙古植被覆盖数据\\jpg\\CDR_1978.tif'.decode('gbk')
-    fdir = 'E:\\FVC内蒙古植被覆盖数据\\1km年值_1978_1985_1995_2005_2018\\'.decode('gbk')
-    outdir = 'E:\\FVC内蒙古植被覆盖数据\\jpg\\1km年值_new\\'.decode('gbk')
+    fdir = 'E:\\FVC内蒙古植被覆盖数据\\30m月值_1978_1985_1995_2005_2018\\'.decode('gbk')
+    outdir = 'D:\\FVC\\图集\\30m_月\\'.decode('gbk')
     mk_dir(outdir)
     flist = os.listdir(fdir)
     for f in flist:
@@ -233,7 +222,7 @@ def main():
                 # # title = ''
                 tif = f
                 outjpeg = outdir+title.decode('gbk')
-                mxd = 'C:\\Users\\ly\\OneDrive\\北师大\\雷添杰\\水土流失与保持\\190823\\出图1.mxd'
+                mxd = 'C:\\Users\\ly\\OneDrive\\北师大\\雷添杰\\水土流失与保持\\190823\\出图2.mxd'
                 mapping(fdir,tif,outjpeg,title,mxd_file=mxd)
             except:
                 date = f.split('_')[4]
@@ -248,7 +237,7 @@ def main():
                 # # title = ''
                 tif = f
                 outjpeg = outdir + title.decode('gbk')
-                mxd = 'C:\\Users\\ly\\OneDrive\\北师大\\雷添杰\\水土流失与保持\\190823\\出图1.mxd'
+                mxd = 'C:\\Users\\ly\\OneDrive\\北师大\\雷添杰\\水土流失与保持\\190823\\出图2.mxd'
                 mapping(fdir, tif, outjpeg, title, mxd_file=mxd)
             # exit()
     pass
@@ -275,9 +264,9 @@ def do_mapping_zhongdian():
     tif_list = []
     shp_name = ['太行山山地丘陵区', '宁蒙覆沙黄土丘陵区', '晋陕蒙丘陵沟壑区', '燕山及辽西山地丘陵区']
 
-    # year_list = ['1978','1985','1995','2005','2018']
-    year_list = ['1','2','3','4']
-    title_list = ['1978-1985', '1985-1995', '1995-2005', '2005-2018']
+    year_list = ['1978','1985','1995','2005','2018']
+    # year_list = ['1','2','3','4']
+    # title_list = ['1978-1985', '1985-1995', '1995-2005', '2005-2018']
     for year in year_list:
         one_year = []
         for sn in shp_name:
@@ -290,17 +279,42 @@ def do_mapping_zhongdian():
     #     for j in i:
     #         print(j.decode('gbk'))
     for i in range(len(tif_list)):
-        mapping_zhongdian(year_list[i],'{}年内蒙古自治区植被覆盖变化'.format(title_list[i]))
+        # mapping_zhongdian(year_list[i],'{}年内蒙古自治区植被覆盖变化'.format(year_list[i]))
+        mapping_zhongdian(year_list[i],'{}年内蒙古自治区植被覆盖分布图'.format(year_list[i]))
+
+def do_mapping_nongmu():
+    year = ['1978', '1985', '1995', '2005', '2018']
+    shp = ['内蒙古草地', '鄂尔多斯市', '内蒙古农牧交错带']
+
+    for y in year:
+        tif_list = []
+        for s in shp:
+            tif = y + '_' + s + '.tif'
+            tif_list.append(tif)
+        title = '{}年内蒙古自治区植被覆盖分布图'.format(y)
+        mapping_nongmu(tif_list, title)
+
+def do_mapping_4fenqu():
+    year = ['1978', '1985', '1995', '2005', '2018']
+    for y in year:
+
+        mapping_fenqu4(y, y)
+
 
 if __name__ == '__main__':
-    # mapping_annual()
+    mapping_annual()
     # fname_pre = ['1_','2_','3_','4_']
     # title_year = ['1978-1985','1985-1995','1995-2005','2005-2018']
     # for i in range(len(fname_pre)):
     #     mapping_fenqu4(fname_pre[i],title_year[i])
     #     # break
     # do_mapping_zhongdian()
-    mapping_annual()
+    # mapping_annual()
+    # do_mapping_monthly()
+    # year = '2018'
+    # title_year = year
 
-
+    # do_mapping_zhongdian()
+    # do_mapping_nongmu()
+    # do_mapping_4fenqu()
     pass
