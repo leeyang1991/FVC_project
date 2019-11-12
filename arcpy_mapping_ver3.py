@@ -30,9 +30,42 @@ def mapping(current_dir,tif,outjpeg,title,mxd_file):
 
 
 
+def mapping_zoom_layer(current_dir,tif,outjpeg,title,mxd_file):
+
+    mxd = arcpy.mapping.MapDocument(mxd_file)
+    df0 = arcpy.mapping.ListDataFrames(mxd)[0]
+
+    workplace = "RASTER_WORKSPACE"
+
+    lyr = arcpy.mapping.ListLayers(mxd, 'tif', df0)[0]
+    lyr.replaceDataSource(current_dir,workplace,tif)
+
+    for textElement in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
+        if textElement.name == 'title':
+            textElement.text = (title)
+    # extent_lyr = arcpy.mapping.ListLayers(mxd, output_mxd['tif'], df0)[0]
+    lyr = arcpy.mapping.ListLayers(mxd, 'tif', df0)[0]
+    extent = lyr.getSelectedExtent()
+    xmin = extent.XMin*0.97
+    ymin = extent.YMin*0.97
+    xmax = extent.XMax*1.03
+    ymax = extent.YMax*1.03
+    newExtent = df0.extent
+    newExtent.XMin, newExtent.YMin, newExtent.XMax, newExtent.YMax = xmin, ymin, xmax, ymax
+    # arcpy.RefreshActiveView()
+    # print(xmin)
+    # print(extent)
+
+    df0.extent = newExtent
+
+    arcpy.mapping.ExportToJPEG(mxd,outjpeg,data_frame='PAGE_LAYOUT',df_export_width=mxd.pageSize.width,df_export_height=mxd.pageSize.height,color_mode='24-BIT_TRUE_COLOR',resolution=300,jpeg_quality=100)
+    # exit()
+
+
+
 def mapping_annual():
     fdir = r'D:\FVC\FVC_1km_new\fusion_int_0-100\\'
-    outdir = r'D:\FVC\图报告\30m_年_fusion\\'
+    outdir = r'D:\FVC\图图集\new\\'
     mk_dir(outdir)
     mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\内蒙古制图模板.mxd'
 
@@ -59,6 +92,45 @@ def mapping_annual():
             outjpeg = outdir.decode('gbk') + title.decode('gbk')
 
             mapping(fdir, tif, outjpeg, title, mxd_file=mxd)
+
+
+
+def mapping_fenqu_single(fdir):
+    # 各个分区单独出图
+    # zoom layer
+    # fdir = r'D:\FVC\FVC_1km_new\fusion_int_0-100\\'
+    outdir = r'D:\FVC\图图集\new\\'
+    mk_dir(outdir)
+    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\内蒙古制图模板.mxd'
+
+    mk_dir(outdir)
+    flist = os.listdir(fdir)
+
+    # name_dic = {'1.tif':'1978-1985','2.tif':'1985-1995','3.tif':'1995-2005','4.tif':'2005-2018'}
+    for f in flist:
+        # if f.endswith('.tif') and not '_2005-' in f:
+
+        if f.endswith('.tif'):
+            print(f)
+            # year = name_dic[f]
+            # year = f.split('.')[0].split('fvc')[1]
+            year = f.split('_')[0]
+            zone = f.split('_')[1].split('.')[0]
+            if '内蒙古' in zone:
+                zone = zone.split('内蒙古')[1]
+            # exit()
+            # year = f.split('_')[1].split('.')[0]
+            # print(year)
+            title = '{}年内蒙古自治区{}植被覆盖度图'.format(year,zone)
+            print(title.decode('gbk'))
+            # exit()
+            # title = ''
+            tif = f
+            outjpeg = outdir.decode('gbk') + title.decode('gbk')
+
+            mapping_zoom_layer(fdir, tif, outjpeg, title, mxd_file=mxd)
+
+
 
 
 def mapping_fenqu4(year,title_year):
@@ -302,7 +374,7 @@ def do_mapping_4fenqu():
 
 
 if __name__ == '__main__':
-    mapping_annual()
+
     # fname_pre = ['1_','2_','3_','4_']
     # title_year = ['1978-1985','1985-1995','1995-2005','2005-2018']
     # for i in range(len(fname_pre)):
@@ -311,10 +383,13 @@ if __name__ == '__main__':
     # do_mapping_zhongdian()
     # mapping_annual()
     # do_mapping_monthly()
-    # year = '2018'
-    # title_year = year
-
     # do_mapping_zhongdian()
     # do_mapping_nongmu()
     # do_mapping_4fenqu()
+    # mapping_annual()
+    # fdir = r'D:\FVC\重点1\clipped\\'
+    fdir = r'D:\FVC\nongmu\clipped\\'
+    # fdir = r'D:\FVC\重点区域范围\30m_fenqu_clipped\\'
+    # fdir = r'D:\FVC\4zone\clipped\\'
+    mapping_fenqu_single(fdir)
     pass
