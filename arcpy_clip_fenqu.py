@@ -153,7 +153,7 @@ def kernel_clip_zhongdian(params):
     sn,save_dir,fdir=params
 
     print('\n' + sn.decode('gbk'))
-    in_template_dataset = r'D:\FVC\重点1\分区shp\重点县市区\\' + sn + '.shp'
+    in_template_dataset = r'E:\FVC内蒙古植被覆盖数据\FVC_D\重点1\分区shp\重点县市区\\' + sn + '.shp'
     mk_dir(save_dir)
     flist = os.listdir(fdir)
     flag = 0
@@ -163,7 +163,7 @@ def kernel_clip_zhongdian(params):
             flag += 1
             continue
         in_raster = fdir + f
-        out_raster = save_dir + f.split('.')[0].split('fvc')[1] + '_' + sn + '.tif'
+        out_raster = save_dir + f.split('.')[0] + '_' + sn + '.tif'
         # print(out_raster)
         # exit()
         nodata_value = -127
@@ -189,9 +189,6 @@ def clip_zhongdian():
     pool.join()
 
 
-#
-
-
 def kernel_clip_zhongdian1(params):
     sn,save_dir,fdir=params
 
@@ -213,19 +210,53 @@ def kernel_clip_zhongdian1(params):
 
 
 def clip_zhongdian1():
-    fdir = r'D:\FVC\30m年值_1978_1985_1995_2005_2018\\'
-    save_dir = r'D:\\FVC\\重点1\\clipped\\'
+    fdir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\30m_substract_int\\'
+    save_dir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\重点1\substract\\'
     mk_dir(save_dir)
     shp_name = ['赤峰市', '鄂尔多斯', '通辽市', '准格尔旗']
     params = []
     for sn in shp_name:
         params.append([sn, save_dir, fdir])
+        kernel_clip_zhongdian([sn, save_dir, fdir])
     # kernel_clip_zhongdian(params[0])
-    pool = multiprocessing.Pool(4)
-    pool.map(kernel_clip_zhongdian, params)
-    pool.close()
-    pool.join()
+    # pool = multiprocessing.Pool(4)
+    # pool.map(kernel_clip_zhongdian, params)
+    # pool.close()
+    # pool.join()
 
+
+def clip_tongliao():
+    fdir = r'D:\FVC\30m年值_1978_1985_1995_2005_2018\\'
+    save_dir = r'D:\\FVC\\tongliao\\clipped\\'
+    mk_dir(save_dir)
+
+    # sn, save_dir, fdir = params
+    # sn = ''
+    # print('\n' + sn.decode('gbk'))
+    in_template_dataset = r'D:\FVC\tongliao\通辽\通辽市.shp'
+    mk_dir(save_dir)
+    flist = os.listdir(fdir)
+    flag = 0
+
+    for f in flist:
+        if not f.endswith('.tif'):
+            flag += 1
+            continue
+        in_raster = fdir + f
+        out_raster = save_dir + f.split('.')[0].split('fvc')[1] + '_' + '通辽.tif'
+        # print(out_raster)
+        # exit()
+        nodata_value = -127
+        arcpy_clip(in_raster, out_raster, in_template_dataset, nodata_value)
+
+
+
+def clip_geqi():
+    # 内蒙古各旗矢量边界
+    tif_dir = r'E:\FVC内蒙古植被覆盖数据\fusion\fusion_int\\'
+    out_dir = r'D:\FVC\geqi\\'
+    shp_name = ['赤峰', '鄂尔多斯', '通辽市', '准格尔旗']
+    pass
 
 
 def main():
@@ -255,3 +286,4 @@ def main():
 if __name__ == '__main__':
     # do_clip_4quyu()
     clip_zhongdian1()
+    # clip_tongliao()

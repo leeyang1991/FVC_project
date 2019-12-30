@@ -64,7 +64,9 @@ def mapping_zoom_layer(current_dir,tif,outjpeg,title,mxd_file):
 
 
 def mapping_annual():
-    fdir = r'D:\FVC\FVC_1km_new\fusion_int_0-100\\'
+    # fdir = r'D:\FVC\FVC_1km_new\fusion_int_0-100\\'# 30m fusion
+    # fdir = r'D:\FVC\30m年值_1978_1985_1995_2005_2018\\' #30m
+    fdir = r'D:\FVC\FVC_1km_new\FVC-year_1km_clipped_0_100\\' #1km
     outdir = r'D:\FVC\图图集\new\\'
     mk_dir(outdir)
     mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\内蒙古制图模板.mxd'
@@ -79,8 +81,8 @@ def mapping_annual():
         if f.endswith('.tif'):
             print(f)
             # year = name_dic[f]
-            # year = f.split('.')[0].split('fvc')[1]
-            year = f.split('.')[0]
+            year = f.split('.')[0].split('fvc')[1]
+            # year = f.split('.')[0]
             # exit()
             # year = f.split('_')[1].split('.')[0]
             # print(year)
@@ -175,15 +177,65 @@ def mapping_fenqu4(year,title_year):
 
 
 
-def mapping_nongmu(tif_list,title):
-    fdir = r'D:\FVC\nongmu\clipped\\'
-    outdir = r'D:\FVC\图图集\农牧交错带\\'
+def qixian4(year,title_year):
+    fdir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\重点1\clipped\\'.decode('gbk')
+    outdir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\图图集\重点1\\'.decode('gbk')
     mk_dir(outdir)
-    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\分区出图_nongmu.mxd'
+    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\qixian4.mxd'
 
     mxd = arcpy.mapping.MapDocument(mxd)
-    df = [0,1,2]
-    shp_name = ['内蒙古草地', '鄂尔多斯市', '内蒙古农牧交错带']
+    df = [0,1,2,3]
+    shp_name = ['赤峰市', '鄂尔多斯', '通辽市', '准格尔旗']
+    # fname_pre = ['1.tif_','2.tif_','3.tif_','4.tif_']
+    fname_pre = year
+    # print(fname_pre)
+
+    # title_year = ['1978-1985','1985-1995','1995-2005','2005-2018']
+    title = '{}年内蒙古自治区植被覆盖变化'.format(title_year)
+    for textElement in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
+        if textElement.name == 'title':
+            textElement.text = (title)
+
+    outjpeg = outdir + title.decode('gbk') + '.jpg'
+
+    for i in df:
+        # print(i)
+        df0 = arcpy.mapping.ListDataFrames(mxd)[i]
+        tif = fname_pre+'_'+shp_name[i]+'.tif'
+        print(tif.decode('gbk'))
+        workplace = "RASTER_WORKSPACE"
+
+
+        lyr = arcpy.mapping.ListLayers(mxd, 'tif', df0)[0]
+        print(fdir)
+        # print(workplace)
+        print(tif.decode('gbk'))
+        lyr.replaceDataSource(fdir, workplace, tif)
+
+    # mxd.saveACopy(outdir + '\\mxd.mxd', '9.2')
+    arcpy.mapping.ExportToJPEG(mxd, outjpeg, data_frame='PAGE_LAYOUT', df_export_width=mxd.pageSize.width,
+                               df_export_height=mxd.pageSize.height, color_mode='24-BIT_TRUE_COLOR', resolution=300,
+                               jpeg_quality=100)
+
+
+def do_mapping_qixian4():
+    year = ['1978', '1985', '1995', '2005', '2018']
+    # shp = ['赤峰市', '鄂尔多斯', '通辽市', '准格尔旗']
+
+    for y in year:
+        qixian4(y, y)
+
+
+
+def mapping_nongmu(tif_list,title):
+    fdir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\重点1\substract'
+    outdir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\重点1\substract_jpg\\'
+    mk_dir(outdir)
+    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\qixian4_substract.mxd'
+
+    mxd = arcpy.mapping.MapDocument(mxd)
+    df = [0,1,2,3]
+    # shp_name = ['内蒙古草地', '鄂尔多斯市', '内蒙古农牧交错带']
     # fname_pre = ['1.tif_','2.tif_','3.tif_','4.tif_']
     # fname_pre = year
     # print(fname_pre)
@@ -273,8 +325,10 @@ def mapping_zhongdian(year,title_year):
 
 def do_mapping_monthly():
 
-    fdir = 'E:\\FVC内蒙古植被覆盖数据\\30m月值_1978_1985_1995_2005_2018\\'.decode('gbk')
-    outdir = 'D:\\FVC\\图集\\30m_月\\'.decode('gbk')
+    # fdir = 'E:\\FVC内蒙古植被覆盖数据\\30m月值_1978_1985_1995_2005_2018\\'.decode('gbk')#30m
+    fdir = r'E:\FVC内蒙古植被覆盖数据\1km月值_1978_1985_1995_2005_2018'.decode('gbk')#1km
+    # outdir = 'D:\\FVC\\图报告\\1km_月\\'.decode('gbk')
+    outdir = 'D:\\FVC\\图报告\\1km_月\\'.decode('gbk')
     mk_dir(outdir)
     flist = os.listdir(fdir)
     for f in flist:
@@ -293,7 +347,8 @@ def do_mapping_monthly():
                 # # exit()
                 # # title = ''
                 tif = f
-                outjpeg = outdir+title.decode('gbk')
+                mk_dir(outdir+year)
+                outjpeg = outdir+year+'\\'+month+'.jpg'
                 mxd = 'C:\\Users\\ly\\OneDrive\\北师大\\雷添杰\\水土流失与保持\\190823\\出图2.mxd'
                 mapping(fdir,tif,outjpeg,title,mxd_file=mxd)
             except:
@@ -308,7 +363,9 @@ def do_mapping_monthly():
                 # # exit()
                 # # title = ''
                 tif = f
-                outjpeg = outdir + title.decode('gbk')
+                # outjpeg = outdir + title.decode('gbk')
+                mk_dir(outdir + year)
+                outjpeg = outdir + year + '\\' + month + '.jpg'
                 mxd = 'C:\\Users\\ly\\OneDrive\\北师大\\雷添杰\\水土流失与保持\\190823\\出图2.mxd'
                 mapping(fdir, tif, outjpeg, title, mxd_file=mxd)
             # exit()
@@ -318,7 +375,8 @@ def do_mapping_monthly():
 def mapping_substract_nongmu():
 
     tif_list = []
-    shp_name = ['内蒙古草地', '鄂尔多斯市', '内蒙古农牧交错带']
+    # shp_name = ['内蒙古草地', '鄂尔多斯市', '内蒙古农牧交错带']
+    shp_name = ['赤峰市', '鄂尔多斯', '通辽市', '准格尔旗']
     title_year = ['1978-1985', '1985-1995', '1995-2005', '2005-2018']
     year_list = [1,2,3,4]
     for year in year_list:
@@ -386,10 +444,21 @@ if __name__ == '__main__':
     # do_mapping_zhongdian()
     # do_mapping_nongmu()
     # do_mapping_4fenqu()
+
+
+    ## new ##
     # mapping_annual()
+    # do_mapping_monthly()
     # fdir = r'D:\FVC\重点1\clipped\\'
-    fdir = r'D:\FVC\nongmu\clipped\\'
+    # fdir = r'D:\FVC\nongmu\clipped\\'
     # fdir = r'D:\FVC\重点区域范围\30m_fenqu_clipped\\'
     # fdir = r'D:\FVC\4zone\clipped\\'
-    mapping_fenqu_single(fdir)
+    # fdir = r'D:\FVC\tongliao\clipped\\'
+    # mapping_fenqu_single(fdir)
+    ## new ##
+
+
+    ## 191230 ##
+    # do_mapping_qixian4()
+    mapping_substract_nongmu()
     pass
