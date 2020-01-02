@@ -283,7 +283,49 @@ def main():
 
     pass
 
+
+
+def kernel_clip_all_substract(params):
+    father_dir,out_rasters_dir,in_ras,in_rasters_dir = params
+
+    for fdir in os.listdir(father_dir):
+        out_dir_i = out_rasters_dir + fdir + '\\'
+        mk_dir(out_dir_i)
+        for f in os.listdir(father_dir + fdir):
+            if f.endswith('.shp'):
+                shp = os.path.join(father_dir, fdir, f)
+                print shp.decode('gbk')
+                zone = f.split('.')[0]
+                out_name = in_ras.split('.')[0]
+                in_raster, out_raster, in_template_dataset, nodata_value = in_rasters_dir + in_ras, out_dir_i + out_name + '_' + zone + '.tif', shp, -127
+                print out_raster.decode('gbk')
+                arcpy_clip(in_raster, out_raster, in_template_dataset, nodata_value)
+
+    pass
+
+def clip_all_substract():
+    father_dir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\shps\\'
+    in_rasters_dir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\30m_substract_int\\'
+    out_rasters_dir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\all_substract_clip\\'
+    in_rasters = []
+    for f in os.listdir(in_rasters_dir):
+        if f.endswith('.tif'):
+            in_rasters.append(f)
+    params = []
+    for in_ras in in_rasters:
+        params.append([father_dir,out_rasters_dir,in_ras,in_rasters_dir])
+
+    pool = multiprocessing.Pool(4)
+    pool.map(kernel_clip_all_substract, params)
+    pool.close()
+    pool.join()
+
+    pass
+
+
+
 if __name__ == '__main__':
     # do_clip_4quyu()
-    clip_zhongdian1()
+    # clip_zhongdian1()
+    clip_all_substract()
     # clip_tongliao()

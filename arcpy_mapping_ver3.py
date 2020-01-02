@@ -46,15 +46,22 @@ def mapping_zoom_layer(current_dir,tif,outjpeg,title,mxd_file):
     # extent_lyr = arcpy.mapping.ListLayers(mxd, output_mxd['tif'], df0)[0]
     lyr = arcpy.mapping.ListLayers(mxd, 'tif', df0)[0]
     extent = lyr.getSelectedExtent()
-    xmin = extent.XMin*0.97
-    ymin = extent.YMin*0.97
-    xmax = extent.XMax*1.03
-    ymax = extent.YMax*1.03
+    xmin = extent.XMin
+    ymin = extent.YMin
+    xmax = extent.XMax
+    ymax = extent.YMax
+
+    x_offset = abs(xmin - xmax) * 0.1
+    y_offset = abs(ymin - ymax) * 0.1
+
+    xmin = xmin - x_offset
+    xmax = xmax + x_offset
+    ymin = ymin - y_offset
+    ymax = ymax + y_offset
+
+
     newExtent = df0.extent
     newExtent.XMin, newExtent.YMin, newExtent.XMax, newExtent.YMax = xmin, ymin, xmax, ymax
-    # arcpy.RefreshActiveView()
-    # print(xmin)
-    # print(extent)
 
     df0.extent = newExtent
 
@@ -132,6 +139,44 @@ def mapping_fenqu_single(fdir):
 
             mapping_zoom_layer(fdir, tif, outjpeg, title, mxd_file=mxd)
 
+
+
+def mapping_fenqu_substract_single(folder):
+    # 各个分区单独出图
+    # zoom layer
+    # fdir = r'D:\FVC\FVC_1km_new\fusion_int_0-100\\'
+    fdir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\all_substract_clip\\'+folder+'\\'
+    outdir = r'E:\FVC内蒙古植被覆盖数据\FVC_D\all_substract_clip_jpg\\'+folder+'\\'
+    mk_dir(outdir)
+    mxd = r'C:\Users\ly\OneDrive\北师大\雷添杰\水土流失与保持\190823\substract.mxd'
+
+    mk_dir(outdir)
+    flist = os.listdir(fdir)
+
+    name_dic = {'1':'1978-1985','2':'1985-1995','3':'1995-2005','4':'2005-2018'}
+    for f in flist:
+        # if f.endswith('.tif') and not '_2005-' in f:
+
+        if f.endswith('.tif'):
+            print(f)
+            # year = name_dic[f]
+            # year = f.split('.')[0].split('fvc')[1]
+            year = f.split('_')[0]
+            zone = f.split('_')[1].split('.')[0]
+            if u'内蒙古'.encode('gbk') in zone:
+                zone = zone.replace(u'内蒙古'.encode('gbk'),'')
+            # exit()
+            # year = f.split('_')[1].split('.')[0]
+            # print(year)
+            # title = '{}年内蒙古自治区{}植被覆盖度图'.format(year,zone)
+            title = '{}年内蒙古自治区{}植被覆盖度变化图'.format(name_dic[year],zone)
+            print(title.decode('gbk'))
+            # exit()
+            # title = ''
+            tif = f
+            outjpeg = outdir.decode('gbk') + title.decode('gbk')
+
+            mapping_zoom_layer(fdir, tif, outjpeg, title, mxd_file=mxd)
 
 
 
@@ -460,5 +505,8 @@ if __name__ == '__main__':
 
     ## 191230 ##
     # do_mapping_qixian4()
-    mapping_substract_nongmu()
+    # mapping_substract_nongmu()
+    for folder in os.listdir(r'E:\FVC内蒙古植被覆盖数据\FVC_D\all_substract_clip\\'):
+        # folder = r'内蒙水土流失分区'
+        mapping_fenqu_substract_single(folder)
     pass
